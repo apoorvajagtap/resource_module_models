@@ -1,10 +1,10 @@
 DOCUMENTATION: |
   module: vyos_firewall_zones
-  ## version_added: 2.10
+  version_added: 2.10
   short_description: FIREWALL zones resource module
   description: This module manages firewall zones on VyOS devices
   author:
-    - 
+    - Apoorva Jagtap (@apoorvajagtap)
   options:
     config:
       description: A dictionary of Firewall zone options.
@@ -23,7 +23,7 @@ DOCUMENTATION: |
               type: str
               required: True
               suboptions:
-                default-action:
+                default_action:
                   description:
                     - Default-action for traffic coming into this zone.
                     - drop (Drop silently (default))
@@ -60,7 +60,20 @@ DOCUMENTATION: |
                   description:
                     - Interface associated with zone.
                     type: str
-                local-zone:
+                local_zone:
                   description:
                     - Zone to be local-zone.
                   type: str        
+    state:
+      description:
+      - The state the configuration should be left in
+      type: str
+      choices:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+      - gathered
+      - rendered
+      - parsed  
+      default: merged
