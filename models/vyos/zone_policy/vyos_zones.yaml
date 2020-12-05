@@ -1,7 +1,7 @@
 DOCUMENTATION: |
   module: vyos_firewall_zones
-  version_added: 2.10
-  short_description: FIREWALL zones resource module
+  ## version_added: 2.10
+  short_description: Firewall zones resource module
   description: This module manages firewall zones on VyOS devices
   author:
     - Apoorva Jagtap (@apoorvajagtap)
@@ -11,59 +11,50 @@ DOCUMENTATION: |
       type: list
       elements: dict
       suboptions:
-        zones:
+        name: 
           description:
-            - The zones list.
+            - Specifies the name of the zone.
+          type: str
+          required: True
+        default_action:
+          description:
+            - Default-action for traffic coming into this zone.
+            - drop (Drop silently (default))
+            - reject (Drop and notify source)
+          type: str
+          choices: ['drop', 'reject']
+        description:
+          description:
+            - Zone description.
+          type: str
+        from:
+          description:
+            - Zone from which to filter traffic.
           type: list
           elements: dict
-            suboptions:
-            zname: 
+          suboptions:
+            name:
               description:
-                - Specifies the name of the zone.
+                - Zone from which to filter traffic.
               type: str
               required: True
-              suboptions:
-                default_action:
-                  description:
-                    - Default-action for traffic coming into this zone.
-                    - drop (Drop silently (default))
-                    - reject (Drop and notify source)
-                  type: str
-                  choices: ['drop', 'reject']
-                description:
-                  description:
-                    - Zone description.
-                  type: str
-                from:
-                  description:
-                    - Zone from which to filter traffic.
-                  type: list
-                  elements: dict
-                  suboptions:
-                    name:
-                      description:
-                        - Zone from which to filter traffic.
-                      type: str
-                      required: True
-                    firewall:
-                      description:
-                        - Firewall options.
-                      type: dict
-                      choices: ['ipv6-name', 'name']
-                      suboptions:
-                        rule_set_name: 
-                          description:
-                            - firewall ruleset.
-                          type: str
-                          required: True
-                interface:
-                  description:
-                    - Interface associated with zone.
-                    type: str
-                local_zone:
-                  description:
-                    - Zone to be local-zone.
-                  type: str        
+            firewall:
+              description:
+                - Firewall options.
+              type: dict
+              choices: ['ipv6-name', 'name']
+            rule_set_name: 
+              description:
+                - firewall ruleset.
+              type: str
+        interface:
+          description:
+            - Interface associated with zone.
+            type: list  
+        local_zone:
+          description:
+            - Zone to be local-zone.
+          type: bool        
     state:
       description:
       - The state the configuration should be left in
