@@ -41,12 +41,19 @@ DOCUMENTATION: |
             firewall:
               description:
                 - Firewall options.
-              type: dict
-              choices: ['ipv6-name', 'name']
-            rule_set_name: 
-              description:
-                - firewall ruleset.
-              type: str
+              type: list
+              elements: dict
+              suboptions:
+                ipv: 
+                  description: 
+                    - Specify the firewall choice
+                  type: str
+                  choices: ['ipv6-name', 'name']
+                  required: True
+                rule_set_name: 
+                  description:
+                    - firewall ruleset.
+                  type: str
         interface:
           description:
             - Interface associated with zone.
