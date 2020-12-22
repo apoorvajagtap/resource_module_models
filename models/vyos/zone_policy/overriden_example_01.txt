@@ -1,0 +1,35 @@
+# Using overriden
+# 
+# Before State:
+# -------------
+# 
+# $ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+# set zone-policy zone zone2 interface 'eth2'
+
+- name: Overrides all device configuration with provided configuration
+    vyos_zones:
+        config:
+        - name: 'zone2'
+          description: 'overriding description'
+          interface: 'eth3'
+
+        state: overriden
+
+# After state:
+# -------------
+#
+#  
+# zone zone2 {
+#     description "overriding description"
+#     interface eth3
+#     interface eth2
+# }
+# 
+# vyos@vyos:~$ show configuration commands | grep zone-policy
+# set zone-policy zone zone2 description 'overriding description'
+# set zone-policy zone zone2 interface 'eth3'

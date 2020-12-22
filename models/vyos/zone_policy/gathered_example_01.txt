@@ -1,0 +1,5 @@
+
+- name: Gathered listed zone-policies with provided configurations
+     vyos_zones:
+        config:
+        state: gathered

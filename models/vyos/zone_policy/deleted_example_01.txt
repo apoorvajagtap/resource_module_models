@@ -1,0 +1,65 @@
+# Using deleted
+#
+# Before state
+# -------------
+#
+# $ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+# set zone-policy zone zone2 interface 'eth2'
+# 
+#
+# vyos@vyos# show zone-policy 
+#  zone zone1 {
+#      default-action drop
+#      description "This sets default_action to drop for zone1"
+#      interface eth1
+#  }
+#  zone zone2 {
+#      description "This filters traffic from zone1"
+#      from zone1 {
+#          firewall {
+#              name INBOUND
+#          }
+#      }
+#      interface eth2
+#  }
+
+- name: Delete attributes of zone2 filtering traffic from zone1
+      vyos_zones:
+        config:
+        - name: 'zone2'
+          from:
+            name: 'zone1'
+            firewall: 
+              ipv: 'name'
+
+        state: deleted
+
+#
+#
+# After state:
+# ------------
+#
+# $ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 interface 'eth2'
+# 
+#  
+# vyos@vyos# show zone-policy  
+# zone zone1 {
+#     default-action drop
+#     description "This sets default_action to drop for zone1"
+#     interface eth1
+# }
+# zone zone2 {
+#     description "This filters traffic from zone1"
+#     interface eth2
+# }
+
