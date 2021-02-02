@@ -1,0 +1,13 @@
+# Using parsed
+#
+#
+- name: Render the commands for provided configuration
+    vyos_zones: 
+        running_config:
+        "set zone-policy zone zone1 default-action 'drop'
+set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+set zone-policy zone zone1 interface 'eth1'
+set zone-policy zone zone2 description 'This filters traffic from zone1'
+set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+set zone-policy zone zone2 interface 'eth2'"
+        state: parsed

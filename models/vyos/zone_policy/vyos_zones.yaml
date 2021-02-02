@@ -1,0 +1,77 @@
+DOCUMENTATION: |
+  module: vyos_firewall_zones
+  ## version_added: 2.10
+  short_description: Firewall zones resource module
+  description: This module manages firewall zones on VyOS devices
+  author:
+    - Apoorva Jagtap (@apoorvajagtap)
+  options:
+    config:
+      description: A dictionary of Firewall zone options.
+      type: list
+      elements: dict
+      suboptions:
+        name: 
+          description:
+            - Specifies the name of the zone.
+          type: str
+          required: True
+        default_action:
+          description:
+            - Default-action for traffic coming into this zone.
+            - drop (Drop silently (default))
+            - reject (Drop and notify source)
+          type: str
+          choices: ['drop', 'reject']
+        description:
+          description:
+            - Zone description.
+          type: str
+        from:
+          description:
+            - Zone from which to filter traffic.
+          type: list
+          elements: dict
+          suboptions:
+            name:
+              description:
+                - Zone from which to filter traffic.
+              type: str
+              required: True
+            firewall:
+              description:
+                - Firewall options.
+              type: list
+              elements: dict
+              suboptions:
+                ipv: 
+                  description: 
+                    - Specify the firewall choice
+                  type: str
+                  choices: ['ipv6-name', 'name']
+                  required: True
+                rule_set_name: 
+                  description:
+                    - firewall ruleset.
+                  type: str
+        interface:
+          description:
+            - Interface associated with zone.
+            type: list  
+        local_zone:
+          description:
+            - Zone to be local-zone.
+          type: bool        
+    state:
+      description:
+      - The state the configuration should be left in
+      type: str
+      choices:
+      - merged
+      - replaced
+      - overridden
+      - deleted
+      - gathered
+      - rendered
+      - parsed  
+      default: merged

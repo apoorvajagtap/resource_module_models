@@ -1,0 +1,74 @@
+# Using replaced
+#
+# Before state:
+# -------------
+#
+# vyos@vyos:~$ show configuration commands| grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+# set zone-policy zone zone2 interface 'eth2'
+# set zone-policy zone zone3 default-action 'reject'
+# set zone-policy zone zone3 from zone1 firewall ipv6-name 'V6-LOCAL'
+# set zone-policy zone zone3 from zone1 firewall name 'Downlink'
+# set zone-policy zone zone3 interface 'eth3'
+
+- name:  Replace device configurations of listed zones with provided configurations
+    vyos_zones:
+        config:
+        - name: 'zone3'
+          from:
+            name: 'zone1'
+            firewall: 
+                ipv: 'name'  
+                rule_set_name: 'LOCAL'
+
+        - name: 'zone1'
+          description: 'changing description for zone1'
+
+        state: replaced
+
+# After state:
+# -------------
+#
+# vyos@vyos# show zone-policy 
+# zone zone1 {
+#     default-action drop
+#     description "changing description for zone1"
+#     interface eth1
+# }
+# zone zone2 {
+#     description "This filters traffic from zone1"
+#     from zone1 {
+#         firewall {
+#             name INBOUND
+#         }
+#     }
+#     interface eth3
+# }
+# zone zone3 {
+#     default-action reject
+#     from zone1 {
+#         firewall {
+#             ipv6-name V6-LOCAL
+#             name LOCAL
+#         }
+#     }
+#     interface eth2
+# }
+#
+#
+#
+# vyos@vyos:~$ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'changing description for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+# set zone-policy zone zone2 interface 'eth2'
+# set zone-policy zone zone3 default-action 'reject'
+# set zone-policy zone zone3 from zone1 firewall ipv6-name 'V6-LOCAL'
+# set zone-policy zone zone3 from zone1 firewall name 'LOCAL'
+# set zone-policy zone zone3 interface 'eth3'

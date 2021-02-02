@@ -1,0 +1,50 @@
+# Using rendered
+#
+#
+- name: Render the commands for provided  configuration
+    vyos_zones:
+        config:
+        - name: 'zone'
+          default_action: 'drop'
+          description: 'This sets default_action to drop for zone1'
+          interface: eth1
+
+        - name: 'zone2'
+          description: 'This filters traffic from zone1'
+          from:
+            name: 'zone1'
+            firewall: 
+              ipv: 'name'  
+              rule_set_name: 'INBOUND'
+          interface: eth2
+
+        - name: 'zone3'
+          default_action: 'reject'
+          from:
+            name: 'zone1'
+            firewall: 
+                - ipv: 'name'
+                  rule_set_name: 'LOCAL'
+                - ipv: 'ipv6-name'
+                  rule_set_name: 'V6-LOCAL'
+          interface: eth3
+
+        state: rendered
+
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+# $ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+# set zone-policy zone zone2 interface 'eth2'
+# set zone-policy zone zone3 default-action 'reject'
+# set zone-policy zone zone3 from zone1 firewall ipv6-name 'V6-LOCAL'
+# set zone-policy zone zone3 from zone1 firewall name 'LOCAL'
+# set zone-policy zone zone3 interface 'eth3'
+#
+

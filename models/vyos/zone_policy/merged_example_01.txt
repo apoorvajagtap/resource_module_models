@@ -1,0 +1,95 @@
+# Using merged
+#
+# Before state:
+# -------------
+#
+# $ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 interface 'eth2'
+#
+# run show zone-policy 
+# -------------------
+# Name: zone1
+# 
+# Interfaces: eth1
+# 
+# From Zone:
+#   name                                    firewall                                
+#   ----                                    --------                                
+# 
+# -------------------
+# Name: zone2
+# 
+# Interfaces: eth2
+# 
+# From Zone:
+#   name                                    firewall                                
+#   ----                                    --------                                
+#
+- name: Merge the provided configuration with the exisiting running configuration
+     vyos_zones:
+        config:
+        - name: 'zone1'
+          description: 'This sets default_action to drop for zone1'
+          default_action: 'drop'
+
+        - name: 'zone2'
+          description: 'This filters traffic from zone1' 
+          from: 
+            name: 'zone1'
+            firewall: 
+              ipv: 'name'
+              rule_set_name: 'INBOUND'
+
+        state: merged
+      
+#
+#
+# After state:
+# ------------
+#
+# $ show configuration commands | grep zone-policy
+# set zone-policy zone zone1 default-action 'drop'
+# set zone-policy zone zone1 description 'This sets default_action to drop for zone1'
+# set zone-policy zone zone1 interface 'eth1'
+# set zone-policy zone zone2 description 'This filters traffic from zone1'
+# set zone-policy zone zone2 from zone1 firewall name 'INBOUND'
+# set zone-policy zone zone2 interface 'eth2'
+# 
+# 
+# vyos@vyos# run show zone-policy 
+# -------------------
+# Name: zone1 [This sets default_action to drop for zone1]
+# 
+# Interfaces: eth1
+# 
+# From Zone:
+#   name                                    firewall                                
+#   ----                                    --------                                
+# 
+# -------------------
+# Name: zone2 [This filters traffic from zone1]
+# 
+# Interfaces: eth2
+# 
+# From Zone:
+#   name                                    firewall                                
+#   ----                                    --------                                
+#   zone1                                   INBOUND    
+#
+#
+# vyos@vyos# show zone-policy
+# zone zone1 {
+#    default-action drop
+#    description "This sets default_action to drop for zone1"
+#    interface eth1
+# }
+# zone zone2 {
+#    description "This filters traffic from zone1"
+#    from zone1 {
+#        firewall {
+#            name INBOUND
+#        }
+#    }
+#    interface eth2
+# }
